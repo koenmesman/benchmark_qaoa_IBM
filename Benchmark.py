@@ -50,7 +50,7 @@ class Benchmark:
         self.lim = lim+1
 
     def run(self):
-        self._problem_size = 12
+        self._problem_size = 5
         out = []
         keys = ['size', 'p', 'score', 'time']
         global BENCHMARK_TIMES
