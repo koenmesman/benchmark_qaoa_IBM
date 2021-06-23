@@ -15,7 +15,7 @@ from qiskit import QuantumCircuit, QuantumRegister, ClassicalRegister
 from qiskit import execute, Aer, IBMQ
 from qiskit.providers.aer import QasmSimulator
 
-IBMQ.enable_account('8a9272c6f1c7a772bc505a4330c874855b28a61fbc9d8f6e11881d7bcdb148c63364b0e88dc7187e8bc10d1f52824ce8c5d2bc90bd9d895915549ca35023a835')
+IBMQ.enable_account('')
 provider = IBMQ.get_provider(hub='ibm-q')
 backend = provider.get_backend('ibmq_qasm_simulator')
 qaoa_shots = 100
