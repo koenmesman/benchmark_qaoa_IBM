@@ -6,7 +6,7 @@ def bitfield(n):
 def mcp_solver(g):
     result = 0
     size, edges = g
-    for n in range(size**2):
+    for n in range(2**size):
         node_array = bitfield(n)
         node_array.extend([0]*(size-len(node_array)))
         node_array = [-1 if x == 0 else 1 for x in node_array]
