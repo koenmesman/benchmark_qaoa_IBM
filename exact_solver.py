@@ -90,7 +90,6 @@ def tsp_score(max_size):
     return opt_results
 
 
-print(tsp_score(5))
 #max_size = 50
 #opt_results = [0]*(max_size-4)
 #for i in range(4, max_size+1):
