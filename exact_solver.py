@@ -9,8 +9,10 @@ def mcp_solver(g):
     size, edges = g
     for n in range(2**(size-1)):
         node_array = bitfield(n)
-        node_array.extend([0]*(size-len(node_array)))
+        zero_array = [0]*(size-len(node_array))
+        node_array = zero_array+node_array
         node_array = [-1 if x == 0 else 1 for x in node_array]
+        print(node_array)
         c = 0
         for e in edges:
             c += 0.5 * (1 - int(node_array[e[0]]) * int(node_array[e[1]]))
@@ -88,7 +90,6 @@ def tsp_score(max_size):
                 result = cost
         opt_results[n-5] = result
     return opt_results
-
 
 #max_size = 50
 #opt_results = [0]*(max_size-4)
