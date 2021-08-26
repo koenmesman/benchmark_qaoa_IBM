@@ -1,8 +1,41 @@
 #!/usr/bin/env python
 import generate_graph as gg
+from itertools import permutations, combinations_with_replacement
 
 def bitfield(n):
     return [int(digit) for digit in bin(n)[2:]]
+
+
+def hamming_2(n):
+  hamming_set = []
+  for i in range(n):
+    for j in range(i+1, n):
+      set = [0]*n
+      set[i] = 1
+      set[j] = 1
+      hamming_set.append(set)
+  return hamming_set
+
+def flatten(t):
+    return [item for sublist in t for item in sublist]
+
+def adjacencies(nodes):
+    hamming_sets = hamming_2(nodes)
+    #set = combinations(hamming_sets, nodes)
+    superset = combinations_with_replacement(hamming_sets, nodes)
+    #print(list(superset))
+    flatset = []
+    megaset = []
+    for subset in superset:
+      megaset.append(permutations(list(subset)))
+    for subset in megaset:
+      for subsubset in subset:
+        #flatset.append(flatten(list(subsubset)))
+        flatset.append(list(subsubset))
+
+    #this still returns a lot of duplicates, finding the set of uniques is to be implemented
+    return flatset
+
 
 def mcp_solver(g):
     result = 0
@@ -12,7 +45,6 @@ def mcp_solver(g):
         zero_array = [0]*(size-len(node_array))
         node_array = zero_array+node_array
         node_array = [-1 if x == 0 else 1 for x in node_array]
-        print(node_array)
         c = 0
         for e in edges:
             c += 0.5 * (1 - int(node_array[e[0]]) * int(node_array[e[1]]))
@@ -29,11 +61,9 @@ def mcp_score(max_size):
         print(opt_results)
     return opt_results
 
-
 def dsp_score(max_size):
     opt_results = [0] * (max_size - 4)
     for i in range(5, max_size + 1):
-        print(i)
         result = 0
         c = 0
         size, edges = gg.regular_graph(i)
@@ -45,7 +75,8 @@ def dsp_score(max_size):
             connections[t[1]].append(t[0])
         for n in range(2 ** size):
             node_array = bitfield(n)
-            node_array.extend([0] * (size - len(node_array)))
+            zero_array = [0] * (size - len(node_array))
+            node_array = zero_array + node_array
             T = 0
             for con in connections:
                 tmp = 0
@@ -67,30 +98,32 @@ def tsp_score(max_size):
     opt_results = [0]*(max_size-4)
     for n in range(5, max_size+1):
         size, A, D = gg.tsp_problem_set(n, gg.regular_graph)
-        cost = 0
+        D = [100, 50, 50, 50, 50, 50, 100, 50, 50, 50, 50, 50, 100, 50, 50, 50, 50, 50, 100, 50, 50, 50, 50, 50, 100]
         coupling = []
         result = 10**8
         for i in range(size):
             for j in range(i):
                 if i != j:
-                    coupling.append([i + j * size, j + i * size])
+                    #coupling.append([i + j * size, j + i * size])
+                    coupling.append([j, i])
         print("evaluating all possible configurations, this might take a while.")
-        for k in range(2 ** (size**2)):
+        node_array_set = adjacencies(n)
+        for node_array in node_array_set:
             cost = 0
-            node_array = bitfield(k)
-            node_array.extend([0] * (size**2 - len(node_array)))
             for i in range(0, size):
-                for j in range(i, size):
-                    cost += D[i + size * j] * node_array[i + size * j]
+                for j in range(0, size):
+                    #cost += D[i + size * j] * node_array[i + size * j]
+                    cost += 0.5*D[i*size + j] * node_array[i][j]
             for j in coupling:
-                cost += -5 * (1 - 2 * node_array[j[0]]) * (1 - 2 * node_array[j[1]])
+                cost += -5 * (1 - 2 * node_array[j[0]][j[1]]) * (1 - 2 * node_array[j[1]][j[0]])
             if cost <= result:
-                print(cost)
                 print(node_array)
                 result = cost
         opt_results[n-5] = result
     return opt_results
 
+
+print(tsp_score(5))
 #max_size = 50
 #opt_results = [0]*(max_size-4)
 #for i in range(4, max_size+1):
